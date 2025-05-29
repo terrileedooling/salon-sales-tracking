@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
+  base: 'https://terrileedooling.github.io/salon-sales-tracking/', // 👈 use your GitHub repo name
   plugins: [react()],
-})
+});
