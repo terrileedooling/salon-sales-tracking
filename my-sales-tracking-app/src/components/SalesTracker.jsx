@@ -9,12 +9,10 @@ export default function SalesTracker() {
   };
 
   const [form, setForm] = useState(initialFormState);
-
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('salesTransactions');
     return saved ? JSON.parse(saved) : [];
   });
-
   const [lastCleared, setLastCleared] = useState(null);
 
   useEffect(() => {
@@ -94,25 +92,31 @@ export default function SalesTracker() {
   const grandTotal = Object.values(totals).reduce((sum, val) => sum + val.amount + val.tip, 0);
 
   return (
-    <div style={{ maxWidth: 500, margin: 'auto', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{
+      maxWidth: '100%',
+      padding: '20px',
+      margin: '0 auto',
+      fontFamily: 'Arial, sans-serif',
+      boxSizing: 'border-box'
+    }}>
       <h1>Sales Tracker</h1>
 
       <div style={{ border: '1px solid #ccc', padding: 20, borderRadius: 8 }}>
-        <label>
-          Date:
-          <input type="date" name="date" value={form.date} onChange={handleChange} />
-        </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <label>
+            Date:
+            <input type="date" name="date" value={form.date} onChange={handleChange} />
+          </label>
 
-        <label style={{ marginLeft: 10 }}>
-          Method:
-          <select name="method" value={form.method} onChange={handleChange} style={{ marginLeft: 5 }}>
-            <option value="cash">Cash</option>
-            <option value="eft">EFT</option>
-            <option value="card">Card</option>
-          </select>
-        </label>
+          <label>
+            Method:
+            <select name="method" value={form.method} onChange={handleChange}>
+              <option value="cash">Cash</option>
+              <option value="eft">EFT</option>
+              <option value="card">Card</option>
+            </select>
+          </label>
 
-        <div style={{ marginTop: 15 }}>
           <label>
             Amount:
             <input
@@ -121,11 +125,10 @@ export default function SalesTracker() {
               name="amount"
               value={form.amount}
               onChange={handleChange}
-              style={{ marginLeft: 5, width: 100 }}
             />
           </label>
 
-          <label style={{ marginLeft: 15 }}>
+          <label>
             Tip:
             <input
               type="number"
@@ -133,18 +136,17 @@ export default function SalesTracker() {
               name="tip"
               value={form.tip}
               onChange={handleChange}
-              style={{ marginLeft: 5, width: 100 }}
             />
           </label>
         </div>
 
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={handleSubmit}>Add Transaction</button>
-          <button onClick={handleClear} style={{ marginLeft: 10 }}>Clear</button>
+          <button onClick={handleClear}>Clear</button>
           {lastCleared && (
-            <button onClick={handleUndo} style={{ marginLeft: 10, color: 'red' }}>Undo</button>
+            <button onClick={handleUndo} style={{ color: 'red' }}>Undo</button>
           )}
-          <button onClick={exportCSV} style={{ marginLeft: 10 }}>Export to CSV</button>
+          <button onClick={exportCSV}>Export to CSV</button>
         </div>
       </div>
 
@@ -161,9 +163,9 @@ export default function SalesTracker() {
       <div style={{ marginTop: 30 }}>
         <h2>Transactions for {form.date}</h2>
         {transactions.filter(t => t.date === form.date).length === 0 && <p>No transactions yet.</p>}
-        <ul>
+        <ul style={{ paddingLeft: 20 }}>
           {transactions.filter(t => t.date === form.date).map((t, i) => (
-            <li key={i}>
+            <li key={i} style={{ marginBottom: 8 }}>
               {t.method.toUpperCase()}: Amount R{t.amount.toFixed(2)}, Tip R{t.tip.toFixed(2)}
             </li>
           ))}
