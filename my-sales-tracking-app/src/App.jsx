@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
-import SalesTracker from './components/SalesTracker';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -9,7 +8,7 @@ function App() {
   return (
     <div>
       {user ? (
-        <Dashboard user={user} />
+        <Dashboard user={user} onLogout={() => setUser(null)}/>
       ) : (
         <LoginForm onLogin={setUser} />
       )}
