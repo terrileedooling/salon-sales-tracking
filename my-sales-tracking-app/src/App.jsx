@@ -1,19 +1,10 @@
 import React, { useState } from "react";
-import LoginForm from "./components/LoginForm";
-import Dashboard from "./pages/Dashboard";
+import AppRoutes from "./routes";
 
 function App() {
   const [user, setUser] = useState(null);
 
-  return (
-    <div>
-      {user ? (
-        <Dashboard user={user} onLogout={() => setUser(null)}/>
-      ) : (
-        <LoginForm onLogin={setUser} />
-      )}
-    </div>
-  );
+  return <AppRoutes user={user} setUser={setUser} />;
 }
 
 export default App;
