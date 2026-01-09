@@ -4,7 +4,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 // Function to create a test user's data
 export const createTestData = async (userId) => {
   try {
-    console.log('Creating test data for user:', userId);
     
     // 1. Create user document
     const userDoc = {
@@ -85,7 +84,6 @@ export const createTestData = async (userId) => {
       await addDoc(collection(db, 'products'), product);
     }
     
-    console.log('Test data created successfully!');
     return true;
   } catch (error) {
     console.error('Error creating test data:', error);

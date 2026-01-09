@@ -19,43 +19,40 @@ import {
   
   export const firestoreService = {
     // Get collection with filters
-    // getCollection: async (collectionName, filters = {}, pagination = {}) => {
-    //   const auth = getAuth();
-    //   const uid = auth.currentUser?.uid;
+    getCollection: async (collectionName, filters = {}, pagination = {}) => {
+      const auth = getAuth();
+      const uid = auth.currentUser?.uid;
     
-    //   if (!uid) throw new Error("User not authenticated");
+      if (!uid) throw new Error("User not authenticated");
     
-    //   let q = query(
-    //     collection(db, collectionName),
-    //     where('userId', '==', uid)
-    //     // orderBy('createdAt', 'desc') // Commented out
-    //   );
+      let q = query(
+        collection(db, collectionName),
+        where('userId', '==', uid)
+        // orderBy('createdAt', 'desc') // Commented out
+      );
     
-    //   Object.entries(filters).forEach(([key, value]) => {
-    //     if (value !== undefined && value !== '') {
-    //       q = query(q, where(key, '==', value));
-    //     }
-    //   });
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          q = query(q, where(key, '==', value));
+        }
+      });
     
-    //   if (pagination.limit) q = query(q, limit(pagination.limit));
-    //   if (pagination.startAfter) q = query(q, startAfter(pagination.startAfter));
+      if (pagination.limit) q = query(q, limit(pagination.limit));
+      if (pagination.startAfter) q = query(q, startAfter(pagination.startAfter));
     
-    //   const snapshot = await getDocs(q);
+      const snapshot = await getDocs(q);
     
-    //   return snapshot.docs.map(d => ({
-    //     id: d.id,
-    //     ...d.data(),
-    //     createdAt: d.data().createdAt?.toDate?.() ?? null,
-    //     updatedAt: d.data().updatedAt?.toDate?.() ?? null
-    //   }));
-    // },
+      return snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: d.data().createdAt?.toDate?.() ?? null,
+        updatedAt: d.data().updatedAt?.toDate?.() ?? null
+      }));
+    },
 
     getCollection: async (collectionName, filters = {}, pagination = {}) => {
       const auth = getAuth();
       const uid = auth.currentUser?.uid;
-      
-      console.log('DEBUG: User UID:', uid);
-      console.log('DEBUG: Collection:', collectionName);
       
       if (!uid) {
         console.error("User not authenticated");
@@ -63,18 +60,13 @@ import {
       }
       
       try {
-        // SIMPLIFY the query to test
         let q = query(
           collection(db, collectionName),
-          where('userId', '==', uid)
-          // REMOVE orderBy temporarily
-          // orderBy('createdAt', 'desc')
+          where('userId', '==', uid),
+          orderBy('createdAt', 'desc')
         );
         
-        console.log('DEBUG: Query constructed');
-        
         const snapshot = await getDocs(q);
-        console.log('DEBUG: Got snapshot with', snapshot.docs.length, 'docs');
         
         return snapshot.docs.map(d => ({
           id: d.id,
@@ -90,7 +82,6 @@ import {
       }
     },
   
-    // Get single document
     getDocument: async (collectionName, docId) => {
       try {
         const docRef = doc(db, collectionName, docId);
