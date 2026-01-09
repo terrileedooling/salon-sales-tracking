@@ -1,26 +1,30 @@
-import { initializeApp } from "firebase/app";
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
-
+import { initializeApp } from 'firebase/app';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBteID6UbtGtFVV-Ye-lhum5ZcV6h8astk",
-    authDomain: "sales-tracker-3dc35.firebaseapp.com",
-    projectId: "sales-tracker-3dc35",
-    storageBucket: "sales-tracker-3dc35.firebasestorage.app",
-    messagingSenderId: "810024677889",
-    appId: "1:810024677889:web:1d67c0e03669d7ef69c600",
-    measurementId: "G-XWZ0TT1E8C"
-  };
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
+};
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-if (location.hostname === "localhost") {
-    connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true});
-    connectFirestoreEmulator(db, "localhost", 8080);
-    console.log("Using FIrestore Emulators");
+// Connect to emulators ONLY in development
+if (process.env.NODE_ENV === 'development') {
+  console.log('Connecting to Firebase Emulators...');
+  
+  // Connect to Auth Emulator (default port 9099)
+  connectAuthEmulator(auth, 'http://localhost:9099');
+  
+  // Connect to Firestore Emulator (default port 8080)
+  connectFirestoreEmulator(db, 'localhost', 8080);
 }
 
 export { auth, db };
