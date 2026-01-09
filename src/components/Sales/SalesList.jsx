@@ -15,6 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
+import SaleModal from './SaleModal';
 import '../../styles/Sales.css';
 
 const SalesList = () => {
@@ -29,6 +30,8 @@ const SalesList = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [saleToDelete, setSaleToDelete] = useState(null);
+  const [showSaleModal, setShowSaleModal] = useState(false);
+  const [editingSale, setEditingSale] = useState(null);
   const [stats, setStats] = useState({
     totalSales: 0,
     totalRevenue: 0,
@@ -114,6 +117,11 @@ const SalesList = () => {
     }
   };
 
+  const handleEditSale = (sale) => {
+    setEditingSale(sale);
+    setShowSaleModal(true);
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -176,7 +184,13 @@ const SalesList = () => {
           <p className="page-subtitle">Manage your sales transactions</p>
         </div>
         <div className="header-actions">
-          <button className="btn btn-primary" onClick={() => {/* Open sale modal */}}>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => {
+              setEditingSale(null);
+              setShowSaleModal(true);
+            }}
+          >
             <Plus size={16} />
             New Sale
           </button>
@@ -350,7 +364,7 @@ const SalesList = () => {
                       </button>
                       <button 
                         className="icon-btn edit"
-                        onClick={() => {/* Open edit modal */}}
+                        onClick={() => handleEditSale(sale)}
                         title="Edit Sale"
                       >
                         <Edit size={16} />
@@ -373,6 +387,19 @@ const SalesList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Sale Modal for creating/editing sales */}
+      {showSaleModal && (
+        <SaleModal
+          isOpen={showSaleModal}
+          onClose={() => {
+            setShowSaleModal(false);
+            setEditingSale(null);
+          }}
+          onSave={fetchSales}
+          sale={editingSale}
+        />
+      )}
 
       {/* Sale Details Modal */}
       {selectedSale && (

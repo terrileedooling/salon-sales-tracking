@@ -31,7 +31,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1rem 1rem;
+    padding: 1.5rem 1.5rem 1rem;
     border-bottom: 1px solid var(--border);
   }
   
@@ -82,7 +82,7 @@
     padding-bottom: 0;
   }
   
-  /* .form-section-title {
+  .form-section-title {
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-primary);
@@ -90,13 +90,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  } */
-
-  .form-section-title h3 {
-    font-size: 2rem !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-    margin-bottom: 0 !important;
   }
   
   .form-row {
@@ -174,7 +167,6 @@
     display: flex;
     gap: 0.5rem;
     align-items: stretch;
-    width: 100%;
   }
   
   .input-with-button .form-input {

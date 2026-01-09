@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
+import { X } from 'lucide-react';
 
 const SupplierModal = ({ closeModal, refreshSuppliers }) => {
     const [formData, setFormData] = useState({
@@ -8,15 +9,16 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
         contactPerson: "",
         email: "",
         phone: "",
+        mobile: "",
         address: "",
         active: true,
     });
 
     const handleChange = (e) => {
-        const { name, value, checked } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: name === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : value,
         });
     };
     
@@ -25,91 +27,105 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
         try {
             await addDoc(collection(db, "suppliers"), {
                 ...formData,
-                created: serverTimestamp(),
-                modified: serverTimestamp(),
+                createdAt: serverTimestamp(),
+                modifiedAt: serverTimestamp(),
             });
             refreshSuppliers();
             closeModal();
         } catch (error) {
             console.error("Error adding supplier:", error);
+            alert("Failed to add supplier. Please try again.");
         }
     };
 
     return (
-        <div style={modalStyles.overlay}>
-            <div style={modalStyles.modal}>
-                <h2>Add Supplier</h2>
-                <form onSubmit={handleSubmit} style={{ display: "grid", gap: "10px" }}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Supplier Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="text"
-                        name="contactPerson"
-                        placeholder="Contact Person"
-                        value={formData.contactPerson}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                    <input
-                      type="text"
-                      name="mobile"
-                      placeholder="Mobile"
-                      value={formData.mobile}
-                      onChange={handleChange}
-                    />
-                    <label>
-                      Active:
-                      <input
-                        type="checkbox"
-                        name="active"
-                        checked={formData.active}
-                        onChange={handleChange}
-                      />
-                    </label>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <button type="submit">Add Supplier</button>
-                      <button type="button" onClick={closeModal}>
-                        Cancel
-                      </button>
-                    </div>   
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h2>Add New Supplier</h2>
+                    <button className="modal-close" onClick={closeModal}>
+                        <X size={20} />
+                    </button>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="modal-body">
+                        <div className="form-group">
+                            <label className="form-label">Supplier Name *</label>
+                            <input
+                                type="text"
+                                name="name"
+                                className="form-input"
+                                placeholder="Enter supplier name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="form-label">Contact Person *</label>
+                            <input
+                                type="text"
+                                name="contactPerson"
+                                className="form-input"
+                                placeholder="Enter contact person name"
+                                value={formData.contactPerson}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-input"
+                                    placeholder="email@example.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Phone</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    className="form-input"
+                                    placeholder="+27 79 123 4567"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="checkbox-group">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="active"
+                                    checked={formData.active}
+                                    onChange={handleChange}
+                                />
+                                Active Supplier
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-outline" onClick={closeModal}>
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            Add Supplier
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     );
 };
 
-// Basic inline styles for modal
-const modalStyles = {
-    overlay: {
-      position: "fixed",
-      top: 0, left: 0,
-      width: "100%", height: "100%",
-      backgroundColor: "rgba(0,0,0,0.5)",
-      display: "flex", justifyContent: "center", alignItems: "center",
-      zIndex: 1000,
-    },
-    modal: {
-      backgroundColor: "#fff",
-      padding: "20px",
-      borderRadius: "8px",
-      width: "400px",
-      maxHeight: "90vh",
-      overflowY: "auto",
-    },
-  };
-  
-  export default SupplierModal;
-  
+export default SupplierModal;
