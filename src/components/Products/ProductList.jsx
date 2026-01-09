@@ -14,6 +14,7 @@ const ProductList = ({ products, onEdit, onDelete, onView }) => {
         <thead>
           <tr>
             <th>Product</th>
+            <th>SKU</th>
             <th>Category</th>
             <th>Price</th>
             <th>Cost</th>
@@ -33,8 +34,10 @@ const ProductList = ({ products, onEdit, onDelete, onView }) => {
                 <td>
                   <div className="product-cell">
                     <div className="product-name">{product.name}</div>
-                    <div className="product-sku">{product.sku || 'No SKU'}</div>
                   </div>
+                </td>
+                <td>
+                  <div className="product-sku">{product.sku || 'No SKU'}</div>
                 </td>
                 <td>{product.category || '-'}</td>
                 <td>R{product.price?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}</td>
@@ -52,7 +55,7 @@ const ProductList = ({ products, onEdit, onDelete, onView }) => {
                 </td>
                 <td>R{stockValue.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td>
-                  <div className="action-buttons">
+                  <div className="product-action-buttons">
                     <button 
                       className="icon-btn"
                       onClick={() => onView?.(product)}

@@ -14,11 +14,8 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import ErrorPage from './pages/ErrorPage';
 import Sidebar from './components/Layout/Sidebar';
-import Header from './components/Layout/Header';
+// import Header from './components/Layout/Header';
 import './App.css';
-import TestSetup from './pages/TestPage';
-import FirestoreDebug from './pages/SimpleTest';
-import TestRules from './pages/TestRules';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -36,7 +33,6 @@ const ProtectedRoute = ({ children }) => {
     <div className="app-container">
       <Sidebar />
       <div className="main-content">
-        <Header />
         <main className="page-content">
           {children}
         </main>
@@ -65,9 +61,6 @@ function AppContent() {
   return (
     <Router>
       <Routes>
-        <Route path="/test-rules" element={<TestRules />} />
-        <Route path="/simple-test" element={<FirestoreDebug />} />
-        <Route path="/test-setup" element={<TestSetup />} />
         {/* Redirect root based on auth status */}
         <Route path="/" element={
           <Navigate to="/dashboard" replace />

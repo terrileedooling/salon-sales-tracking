@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import { firestoreService } from '../firebase/firestoreService';
 import ProductModal from '../components/Products/ProductModal';
 import ProductList from '../components/Products/ProductList';
-// import CategoryModal from '../components/CategoryModal';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 import ErrorMessage from '../components/Common/ErrorMessage';
 import { Plus, Filter, Download, Upload } from 'lucide-react';
@@ -13,6 +12,8 @@ import { Package } from 'lucide-react';
 const ProductsPage = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -25,26 +26,56 @@ const ProductsPage = () => {
   });
 
   useEffect(() => {
-    fetchProducts();
+    if (user) {
+      fetchDashboardData();
+    }
   }, [user, filters]);
 
-  const fetchProducts = async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
 
       if (!user) return;
 
-      const queryFilters = {};
-      if (filters.category) queryFilters.category = filters.category;
-      if (filters.supplier) queryFilters.supplierId = filters.supplier;
+      // Fetch categories from Firestore
+      const categoriesData = await firestoreService.getCollection('categories', user.uid);
+      setCategories(categoriesData);
+
+      // Fetch all products
+      const allProductsData = await firestoreService.getCollection('products', user.uid);
       
-      const productsData = await firestoreService.getCollection('products', user.uid, queryFilters);
+      // Calculate product counts per category
+      const counts = {};
+      allProductsData.forEach(product => {
+        if (product.category) {
+          counts[product.category] = (counts[product.category] || 0) + 1;
+        }
+      });
+      setCategoryCounts(counts);
+      
+      // Apply filters for display
+      let filteredProducts = allProductsData;
+      
+      // Apply category filter
+      if (filters.category) {
+        filteredProducts = filteredProducts.filter(product => 
+          product.category === filters.category
+        );
+      }
+      
+      // Apply supplier filter
+      if (filters.supplier) {
+        filteredProducts = filteredProducts.filter(product => 
+          product.supplierId === filters.supplier
+        );
+      }
       
       // Apply low stock filter
-      let filteredProducts = productsData;
       if (filters.lowStock) {
-        filteredProducts = productsData.filter(product => product.stock <= 10);
+        filteredProducts = filteredProducts.filter(product => 
+          product.stock <= (product.minStock || 10)
+        );
       }
       
       setProducts(filteredProducts);
@@ -64,9 +95,63 @@ const ProductsPage = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await firestoreService.deleteDocument('products', productId);
-        fetchProducts();
+        fetchDashboardData();
       } catch (err) {
         setError(err.message);
+      }
+    }
+  };
+
+  const handleAddCategory = async () => {
+    const newCategory = prompt('Enter new category name:');
+    if (newCategory && newCategory.trim()) {
+      try {
+        await firestoreService.addDocument('categories', {
+          name: newCategory.trim(),
+          userId: user.uid,
+          description: '',
+          createdAt: new Date().toISOString(),
+          modifiedAt: new Date().toISOString()
+        });
+        
+        fetchDashboardData();
+        alert(`Category "${newCategory}" added successfully!`);
+      } catch (err) {
+        alert('Error adding category: ' + err.message);
+      }
+    }
+  };
+
+  const handleDeleteCategory = async (categoryName) => {
+    if (window.confirm(`Are you sure you want to delete category "${categoryName}"? This will not delete products, but will remove their category assignment.`)) {
+      try {
+        const categoriesData = await firestoreService.getCollection('categories', user.uid);
+        const categoryToDelete = categoriesData.find(cat => cat.name === categoryName);
+        
+        if (categoryToDelete) {
+          await firestoreService.deleteDocument('categories', categoryToDelete.id);
+          
+          const productsData = await firestoreService.getCollection('products', user.uid);
+          const updatePromises = productsData
+            .filter(product => product.category === categoryName)
+            .map(product => 
+              firestoreService.updateDocument('products', product.id, {
+                ...product,
+                category: ''
+              })
+            );
+          
+          await Promise.all(updatePromises);
+          fetchDashboardData();
+          
+          if (filters.category === categoryName) {
+            setFilters({...filters, category: ''});
+          }
+          
+          alert(`Category "${categoryName}" deleted successfully!`);
+        }
+      } catch (err) {
+        alert('Error deleting category: ' + err.message);
       }
     }
   };
@@ -115,7 +200,7 @@ const ProductsPage = () => {
             className="btn btn-secondary"
             onClick={() => setShowCategoryModal(true)}
           >
-            Categories
+            Manage Categories ({categories.length})
           </button>
           <button 
             className="btn btn-secondary"
@@ -137,9 +222,9 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      {error && <ErrorMessage message={error} onRetry={fetchProducts} />}
+      {error && <ErrorMessage message={error} onRetry={fetchDashboardData} />}
 
-      {/* Filters */}
+      {/* Filters - SIMPLIFIED - removed add/delete buttons */}
       <div className="filters-section">
         <div className="filter-group">
           <label htmlFor="category">Category</label>
@@ -148,11 +233,15 @@ const ProductsPage = () => {
             value={filters.category}
             onChange={(e) => setFilters({...filters, category: e.target.value})}
           >
-            <option value="">All Categories</option>
-            <option value="haircare">Haircare</option>
-            <option value="skincare">Skincare</option>
-            <option value="makeup">Makeup</option>
-            <option value="tools">Tools</option>
+            <option value="">All Categories ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.name}>
+                {category.name} ({categoryCounts[category.name] || 0})
+              </option>
+            ))}
+            {categories.length === 0 && (
+              <option value="" disabled>No categories found</option>
+            )}
           </select>
         </div>
         
@@ -196,7 +285,7 @@ const ProductsPage = () => {
         <div className="summary-card">
           <h3>Categories</h3>
           <p className="summary-value">
-            {[...new Set(products.map(p => p.category))].filter(Boolean).length}
+            {categories.length}
           </p>
         </div>
       </div>
@@ -207,7 +296,7 @@ const ProductsPage = () => {
           <div className="empty-state">
             <Package size={48} />
             <h3>No products found</h3>
-            <p>Add your first product to get started</p>
+            <p>{filters.category || filters.lowStock ? 'Try changing your filters' : 'Add your first product to get started'}</p>
             <button 
               className="btn btn-primary"
               onClick={() => {
@@ -228,7 +317,7 @@ const ProductsPage = () => {
         )}
       </div>
 
-      {/* Modals */}
+      {/* Product Modal */}
       {showProductModal && (
         <ProductModal
           isOpen={showProductModal}
@@ -236,16 +325,71 @@ const ProductsPage = () => {
             setShowProductModal(false);
             setEditingProduct(null);
           }}
-          onSave={fetchProducts}
+          onSave={fetchDashboardData}
           product={editingProduct}
+          categories={categories}
         />
       )}
 
+      {/* Simple Category Modal */}
       {showCategoryModal && (
-        <CategoryModal
-          isOpen={showCategoryModal}
-          onClose={() => setShowCategoryModal(false)}
-        />
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Manage Categories</h2>
+              <button className="modal-close" onClick={() => setShowCategoryModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="categories-list">
+                {categories.length === 0 ? (
+                  <p className="text-muted">No categories yet. Add your first category!</p>
+                ) : (
+                  <ul>
+                    {categories.map(category => (
+                      <li key={category.id} className="category-item">
+                        <span className="category-name">{category.name}</span>
+                        <span className="category-count">({categoryCounts[category.name] || 0} products)</span>
+                        <div className="category-actions">
+                          <button 
+                            className="btn btn-sm btn-outline"
+                            onClick={() => {
+                              setFilters({...filters, category: category.name});
+                              setShowCategoryModal(false);
+                            }}
+                          >
+                            Filter
+                          </button>
+                          <button 
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDeleteCategory(category.name)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  className="btn btn-primary"
+                  onClick={handleAddCategory}
+                >
+                  + Add New Category
+                </button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setShowCategoryModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
