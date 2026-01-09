@@ -8,7 +8,7 @@ const SalesPage = () => {
   
   return (
     <div className="page-container">
-      <div className="page-header">
+      {/* <div className="page-header">
         <div>
           <h1>Sales</h1>
           <p className="page-subtitle">Manage your sales transactions</p>
@@ -20,7 +20,7 @@ const SalesPage = () => {
           <Plus size={16} />
           New Sale
         </button>
-      </div>
+      </div> */}
       
       {/* Add Sales List component here */}
       <SalesList />

@@ -3,6 +3,7 @@ import { db } from "../firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import SupplierList from "../components/Suppliers/SupplierList";
 import SupplierModal from "../components/Suppliers/SupplierModal";
+import '../styles/SuppliersPage.css';
 
 const SuppliersPage = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -28,8 +29,12 @@ const SuppliersPage = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Suppliers</h1>
-      <button onClick={() => setIsModalOpen(true)}>+ Add Supplier</button>
+      <div className="page-header">
+        <h1>Suppliers</h1>
+        <div className="header-actions">
+          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>+ Add Supplier</button>
+        </div>
+      </div>
 
       <SupplierList suppliers={suppliers} />
 

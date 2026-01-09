@@ -6,7 +6,7 @@ import ProductList from '../components/Products/ProductList';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 import ErrorMessage from '../components/Common/ErrorMessage';
 import { Plus, Filter, Download, Upload } from 'lucide-react';
-import './ProductsPage.css';
+import '../styles/ProductsPage.css';
 import { Package } from 'lucide-react';
 
 const ProductsPage = () => {
@@ -38,11 +38,9 @@ const ProductsPage = () => {
 
       if (!user) return;
 
-      // Fetch categories from Firestore
       const categoriesData = await firestoreService.getCollection('categories', user.uid);
       setCategories(categoriesData);
 
-      // Fetch all products
       const allProductsData = await firestoreService.getCollection('products', user.uid);
       
       // Calculate product counts per category
@@ -190,7 +188,7 @@ const ProductsPage = () => {
 
   return (
     <div className="products-page">
-      <div className="products-header">
+      <div className="page-header">
         <div>
           <h1>Products</h1>
           <p className="page-subtitle">Manage your product inventory and pricing</p>
@@ -224,7 +222,6 @@ const ProductsPage = () => {
 
       {error && <ErrorMessage message={error} onRetry={fetchDashboardData} />}
 
-      {/* Filters - SIMPLIFIED - removed add/delete buttons */}
       <div className="filters-section">
         <div className="filter-group">
           <label htmlFor="category">Category</label>
