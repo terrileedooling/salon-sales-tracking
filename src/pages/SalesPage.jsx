@@ -7,22 +7,7 @@ const SalesPage = () => {
   const [showSaleModal, setShowSaleModal] = useState(false);
   
   return (
-    <div className="page-container">
-      {/* <div className="page-header">
-        <div>
-          <h1>Sales</h1>
-          <p className="page-subtitle">Manage your sales transactions</p>
-        </div>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowSaleModal(true)}
-        >
-          <Plus size={16} />
-          New Sale
-        </button>
-      </div> */}
-      
-      {/* Add Sales List component here */}
+    <>
       <SalesList />
       
       {showSaleModal && (
@@ -35,7 +20,7 @@ const SalesPage = () => {
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 

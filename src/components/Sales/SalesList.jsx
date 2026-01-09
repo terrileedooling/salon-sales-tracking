@@ -10,7 +10,9 @@ import {
   Trash2,
   Calendar,
   DollarSign,
-  User
+  User,
+  Plus,
+  X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import '../../styles/Sales.css';
@@ -43,7 +45,7 @@ const SalesList = () => {
   const fetchSales = async (filters = {}) => {
     setLoading(true);
     try {
-      const salesData = await firestoreService.getCollection('sales', filters);
+      const salesData = await firestoreService.getCollection('sales', user.uid, filters);
       setSales(salesData);
       calculateStats(salesData);
     } catch (error) {
@@ -76,8 +78,8 @@ const SalesList = () => {
   const handleSearch = () => {
     const filters = {};
     if (searchTerm) {
-      // You could search by customer name, sale ID, etc.
-      // This would need customer data joined or stored in sale
+      // Search by customer name or sale ID
+      // Note: This would require proper implementation based on your data structure
     }
     if (dateRange.start) filters.startDate = dateRange.start;
     if (dateRange.end) filters.endDate = dateRange.end;
@@ -166,13 +168,17 @@ const SalesList = () => {
   }
 
   return (
-    <div className="sales-container">
+    <>
       {/* Header */}
       <div className="page-header">
-        <h1>Sales History</h1>
+        <div>
+          <h1>Sales History</h1>
+          <p className="page-subtitle">Manage your sales transactions</p>
+        </div>
         <div className="header-actions">
           <button className="btn btn-primary" onClick={() => {/* Open sale modal */}}>
-            + New Sale
+            <Plus size={16} />
+            New Sale
           </button>
           <button className="btn btn-secondary" onClick={exportToCSV}>
             <Download size={16} />
@@ -313,12 +319,12 @@ const SalesList = () => {
                   <td>
                     <div className="customer-cell">
                       <User size={14} />
-                      <span>{sale.customerName || 'Walk-in Customer'}</span>
+                      <span>{sale.customerName || 'Walk-in'}</span>
                     </div>
                   </td>
                   <td>
                     <div className="items-count">
-                      {sale.items?.length || 0} items
+                      {sale.items?.length || 0}
                     </div>
                   </td>
                   <td>
@@ -334,7 +340,7 @@ const SalesList = () => {
                     <strong>{formatCurrency(sale.total || 0)}</strong>
                   </td>
                   <td>
-                    <div className="action-buttons">
+                    <div className="sales-action-buttons">
                       <button 
                         className="icon-btn view"
                         onClick={() => setSelectedSale(sale)}
@@ -493,7 +499,7 @@ const SalesList = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

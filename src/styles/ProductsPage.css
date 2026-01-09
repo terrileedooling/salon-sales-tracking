@@ -1,8 +1,4 @@
-.products-page {
-    padding: 2rem;
-  }
-  
-  .products-loading {
+.products-loading {
     display: flex;
     align-items: center;
     justify-content: center;
