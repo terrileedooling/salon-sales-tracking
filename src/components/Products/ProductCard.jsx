@@ -84,7 +84,6 @@ const ProductCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Card Header with Product Image/Icon and Status */}
       <div className="product-card-header">
         <div className="product-icon">
           <Package size={24} />

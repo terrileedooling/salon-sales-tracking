@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext"; // Import useAuth
-import { firestoreService } from "../firebase/firestoreService"; // Import firestoreService
+import { useAuth } from "../context/AuthContext";
+import { firestoreService } from "../firebase/firestoreService";
 import SupplierList from "../components/Suppliers/SupplierList";
 import SupplierModal from "../components/Suppliers/SupplierModal";
 import SupplierViewModal from "../components/Suppliers/SupplierViewModal";
@@ -8,7 +8,7 @@ import SupplierDeleteModal from "../components/Suppliers/SupplierDeleteModal";
 import '../styles/SuppliersPage.css';
 
 const SuppliersPage = () => {
-  const { user } = useAuth(); // Get current user
+  const { user } = useAuth();
   const [suppliers, setSuppliers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
@@ -17,7 +17,7 @@ const SuppliersPage = () => {
   const [editingSupplier, setEditingSupplier] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch suppliers from Firestore - FILTERED BY USER ID
+  // Fetch suppliers filter by userId
   const fetchSuppliers = async () => {
     try {
       setLoading(true);
@@ -27,8 +27,7 @@ const SuppliersPage = () => {
         setSuppliers([]);
         return;
       }
-      
-      // Use firestoreService.getCollection with user.uid filter
+
       const suppliersData = await firestoreService.getCollection('suppliers', user.uid);
       setSuppliers(suppliersData);
       
@@ -36,9 +35,8 @@ const SuppliersPage = () => {
       console.error("Error fetching suppliers:", error);
       alert("Error loading suppliers. Please refresh the page.");
       
-      // Fallback: Try direct fetch if firestoreService fails
       try {
-        const db = firestoreService.getFirestore(); // Assuming you have this method
+        const db = firestoreService.getFirestore();
         const { collection, getDocs, query, where } = await import("firebase/firestore");
         const q = query(collection(db, "suppliers"), where("userId", "==", user.uid));
         const querySnapshot = await getDocs(q);
@@ -154,7 +152,6 @@ const SuppliersPage = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       {deleteModalOpen && selectedSupplier && (
         <SupplierDeleteModal
           supplier={selectedSupplier}

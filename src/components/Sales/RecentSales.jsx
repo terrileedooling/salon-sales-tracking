@@ -22,7 +22,7 @@ const RecentSales = ({ sales, limit = 5 }) => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return '-';
     try {
       return format(new Date(dateString), 'MMM dd, HH:mm');
     } catch {
@@ -122,7 +122,7 @@ const RecentSales = ({ sales, limit = 5 }) => {
                   <div className="sale-time">{formatDate(sale.time || sale.createdAt)}</div>
                   <div className="sale-customer">
                     <User size={12} />
-                    <span>{sale.customerName || 'Walk-in Customer'}</span>
+                    <span>{sale.customerName || 'Walk-in'}</span>
                   </div>
                 </div>
               </div>
