@@ -1,33 +1,29 @@
-/* app.css - Updated with Green, Prosperous, Growth Theme */
-
 :root {
-  /* Primary Green Palette for Growth & Money */
-  --primary: #10b981;          /* Emerald Green - Prosperity */
-  --primary-light: #34d399;    /* Lighter Green */
-  --primary-dark: #059669;     /* Deep Green - Stability */
-  --secondary: #0d9488;        /* Teal - Balance */
-  --accent: #f59e0b;           /* Gold - Wealth & Success */
+  --primary: #10b981;
+  --primary-light: #34d399;
+  --primary-dark: #059669;
+  --secondary: #0d9488;
+  --accent: #f59e0b;
   
-  /* Supporting Colors */
-  --success: #22c55e;          /* Success Green */
-  --danger: #ef4444;           /* Red */
-  --warning: #f59e0b;          /* Gold/Amber */
-  --info: #3b82f6;             /* Blue */
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
   
   /* Background & Surface */
-  --background: #f0fdf4;       /* Very light green background */
-  --surface: #ffffff;          /* White surfaces */
+  --background: #f0fdf4;
+  --surface: #ffffff; 
   
   /* Text Colors */
-  --text-primary: #064e3b;     /* Dark green for primary text */
-  --text-secondary: #047857;   /* Medium green for secondary text */
-  --text-muted: #6b7280;       /* Neutral gray for muted text */
+  --text-primary: #064e3b;
+  --text-secondary: #047857;
+  --text-muted: #6b7280;
   
   /* Borders & Dividers */
   --border: #d1fae5;           /* Light green border */
   --border-dark: #a7f3d0;      /* Slightly darker border */
   
-  /* Special Effects */
   --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.15);
@@ -66,7 +62,7 @@ body {
   background: var(--background);
 }
 
-/* Sidebar - Green Prosperity Theme */
+/* Sidebar  */
 .sidebar {
   width: 250px;
   background: linear-gradient(180deg, #065f46 0%, #047857 100%);

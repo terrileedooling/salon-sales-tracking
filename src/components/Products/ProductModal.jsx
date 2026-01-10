@@ -481,7 +481,7 @@ const ProductModal = ({ isOpen, onClose, onSave, product, categories = [] }) => 
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Barcode / ISBN</label>
+                  <label className="form-label">Barcode</label>
                   <input
                     type="text"
                     className="form-input"
