@@ -185,7 +185,7 @@ const SaleModal = ({ isOpen, onClose, onSave, sale }) => {
           </button>
         </div>
         
-        <div className="sale-modal-body">
+        <div className="modal-body">
           <div className="sale-left-panel">
             {/* Product Selection */}
             <div className="product-selection">
@@ -282,7 +282,7 @@ const SaleModal = ({ isOpen, onClose, onSave, sale }) => {
                     value={formData.customerId}
                     onChange={(e) => setFormData({...formData, customerId: e.target.value})}
                   >
-                    <option value="">Walk-in Customer</option>
+                    <option value="">Walk-in</option>
                     {customers.map(customer => (
                       <option key={customer.id} value={customer.id}>
                         {customer.name}
@@ -376,7 +376,7 @@ const SaleModal = ({ isOpen, onClose, onSave, sale }) => {
                 </button>
                 <button 
                   type="submit" 
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                   disabled={loading || cart.length === 0}
                 >
                   {loading ? 'Processing...' : (sale ? 'Update Sale' : 'Complete Sale')}

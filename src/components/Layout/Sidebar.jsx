@@ -1,4 +1,3 @@
-// src/components/Layout/Sidebar.jsx (Simplified)
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -30,9 +29,9 @@ const Sidebar = () => {
     { path: '/products', icon: <Package size={20} />, label: 'Products' },
     { path: '/sales', icon: <ShoppingCart size={20} />, label: 'Sales' },
     { path: '/suppliers', icon: <Users size={20} />, label: 'Suppliers' },
-    { path: '/invoices', icon: <FileText size={20} />, label: 'Invoices' },
-    { path: '/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
+    // { path: '/invoices', icon: <FileText size={20} />, label: 'Invoices' },
+    // { path: '/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
+    // { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
 
   return (
