@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import { X } from 'lucide-react';
+import { useAuth } from "../../context/AuthContext"; // Import useAuth
 
-const SupplierModal = ({ closeModal, refreshSuppliers }) => {
+const SupplierModal = ({ closeModal, refreshSuppliers, supplier }) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         name: "",
         contactPerson: "",
@@ -13,6 +15,33 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
         address: "",
         active: true,
     });
+    const [loading, setLoading] = useState(false);
+
+    // Populate form when supplier prop changes (for editing)
+    useEffect(() => {
+        if (supplier) {
+            setFormData({
+                name: supplier.name || "",
+                contactPerson: supplier.contactPerson || "",
+                email: supplier.email || "",
+                phone: supplier.phone || "",
+                mobile: supplier.mobile || "",
+                address: supplier.address || "",
+                active: supplier.active !== undefined ? supplier.active : true,
+            });
+        } else {
+            // Reset form for new supplier
+            setFormData({
+                name: "",
+                contactPerson: "",
+                email: "",
+                phone: "",
+                mobile: "",
+                address: "",
+                active: true,
+            });
+        }
+    }, [supplier]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -24,17 +53,38 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!user) {
+            alert("You must be logged in to save supplier");
+            return;
+        }
+        
+        setLoading(true);
         try {
-            await addDoc(collection(db, "suppliers"), {
+            const supplierData = {
                 ...formData,
-                createdAt: serverTimestamp(),
+                userId: user.uid,
                 modifiedAt: serverTimestamp(),
-            });
+            };
+
+            if (supplier) {
+                // Update existing supplier
+                await updateDoc(doc(db, "suppliers", supplier.id), supplierData);
+            } else {
+                // Add new supplier
+                await addDoc(collection(db, "suppliers"), {
+                    ...supplierData,
+                    createdAt: serverTimestamp(),
+                });
+            }
+            
             refreshSuppliers();
             closeModal();
         } catch (error) {
-            console.error("Error adding supplier:", error);
-            alert("Failed to add supplier. Please try again.");
+            console.error("Error saving supplier:", error);
+            alert(`Failed to ${supplier ? 'update' : 'add'} supplier. Please try again.`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -42,8 +92,12 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
         <div className="modal-overlay">
             <div className="modal-content">
                 <div className="modal-header">
-                    <h2>Add New Supplier</h2>
-                    <button className="modal-close" onClick={closeModal}>
+                    <h2>{supplier ? 'Edit Supplier' : 'Add New Supplier'}</h2>
+                    <button 
+                        className="modal-close" 
+                        onClick={closeModal}
+                        disabled={loading}
+                    >
                         <X size={20} />
                     </button>
                 </div>
@@ -59,6 +113,7 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
+                                disabled={loading}
                             />
                         </div>
                         
@@ -72,6 +127,7 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                                 value={formData.contactPerson}
                                 onChange={handleChange}
                                 required
+                                disabled={loading}
                             />
                         </div>
                         
@@ -85,6 +141,7 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                                     placeholder="email@example.com"
                                     value={formData.email}
                                     onChange={handleChange}
+                                    disabled={loading}
                                 />
                             </div>
                             
@@ -97,8 +154,35 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                                     placeholder="+27 79 123 4567"
                                     value={formData.phone}
                                     onChange={handleChange}
+                                    disabled={loading}
                                 />
                             </div>
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="form-label">Mobile (Optional)</label>
+                            <input
+                                type="tel"
+                                name="mobile"
+                                className="form-input"
+                                placeholder="+27 82 123 4567"
+                                value={formData.mobile}
+                                onChange={handleChange}
+                                disabled={loading}
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="form-label">Address (Optional)</label>
+                            <textarea
+                                name="address"
+                                className="form-input"
+                                placeholder="Enter full address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                rows="3"
+                                disabled={loading}
+                            />
                         </div>
                         
                         <div className="checkbox-group">
@@ -108,6 +192,7 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                                     name="active"
                                     checked={formData.active}
                                     onChange={handleChange}
+                                    disabled={loading}
                                 />
                                 Active Supplier
                             </label>
@@ -115,11 +200,20 @@ const SupplierModal = ({ closeModal, refreshSuppliers }) => {
                     </div>
                     
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-outline" onClick={closeModal}>
+                        <button 
+                            type="button" 
+                            className="btn btn-outline" 
+                            onClick={closeModal}
+                            disabled={loading}
+                        >
                             Cancel
                         </button>
-                        <button type="submit" className="btn btn-primary">
-                            Add Supplier
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary"
+                            disabled={loading}
+                        >
+                            {loading ? 'Saving...' : (supplier ? 'Update Supplier' : 'Add Supplier')}
                         </button>
                     </div>
                 </form>

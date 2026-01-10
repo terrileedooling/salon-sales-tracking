@@ -104,7 +104,7 @@ function AppContent() {
           </ProtectedRoute>
         } />
         
-        <Route path="/invoices" element={
+        {/* <Route path="/invoices" element={
           <ProtectedRoute>
             <InvoicesPage />
           </ProtectedRoute>
@@ -120,7 +120,7 @@ function AppContent() {
           <ProtectedRoute>
             <SettingsPage />
           </ProtectedRoute>
-        } />
+        } /> */}
         
         {/* Error/404 Page */}
         <Route path="*" element={<ErrorPage />} />
